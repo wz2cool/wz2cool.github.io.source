@@ -42,5 +42,3 @@ public interface NorthwindDao {
     <if test="orderExpression != null and orderExpression != ''">ORDER BY ${orderExpression}</if>
 </select>
 ```
-
-<script async defer src="https://buttons.github.io/buttons.js"></script>
