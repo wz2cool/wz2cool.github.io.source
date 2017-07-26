@@ -2,6 +2,7 @@
 title: Mybatis Dynamic Query 简单筛选
 date: 2017-07-25 23:52:00
 tags: Mybatis Dynamic Query
+author: wz2cool
 ---
 <a class="github-button" href="https://github.com/wz2cool" data-size="large" data-show-count="true" aria-label="Follow @wz2cool on GitHub">Follow @wz2cool</a> <a class="github-button" href="https://github.com/wz2cool/mybatis-dynamic-query" data-size="large" data-show-count="true" aria-label="Star wz2cool/mybatis-dynamic-query on GitHub">Star</a> <a class="github-button" href="https://github.com/wz2cool/mybatis-dynamic-query/fork" data-size="large" data-show-count="true" aria-label="Fork wz2cool/mybatis-dynamic-query on GitHub">Fork</a>
 在框架中，筛选描述类有两种（FilterDescriptor, FilterGroupDescriptor），这里我们主要举例来说明FilterDescriptor用法。  
