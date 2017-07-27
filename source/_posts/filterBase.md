@@ -29,7 +29,7 @@ INSERT INTO product (product_id, category_id, product_name, price) VALUES
 ```
 添加Entity，Entity定义参照： [基本概念](https://wz2cool.gitbooks.io/mybatis-dynamic-query-zh-cn/content/definition.html) 
 ```java
-// 类名和表名做了映射
+// 类名和表名做了映射 
 @Table(name = "product")
 public class Product {
     // 这里的productID 属性做了和数据库列的映射
