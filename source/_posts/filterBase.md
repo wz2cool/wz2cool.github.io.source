@@ -6,6 +6,8 @@ tags:
 - java
 author: wz2cool
 ---
+项目地址：https://github.com/wz2cool/mybatis-dynamic-query  
+文档地址：https://wz2cool.gitbooks.io/mybatis-dynamic-query-zh-cn/content/  
 在框架中，筛选描述类有两种（FilterDescriptor, FilterGroupDescriptor），这里我们主要举例来说明FilterDescriptor用法。  
 FilterDescriptor 定义可以参照：[FilterDescriptor类](https://wz2cool.gitbooks.io/mybatis-dynamic-query-zh-cn/content/filterdescriptor.html)
 
