@@ -1,7 +1,9 @@
 ---
 title: Mybatis Dynamic Query 简单筛选
 date: 2017-07-25 23:52:00
-tags: Mybatis Dynamic Query
+tags: 
+- Mybatis Dynamic Query
+- java
 author: wz2cool
 ---
 在框架中，筛选描述类有两种（FilterDescriptor, FilterGroupDescriptor），这里我们主要举例来说明FilterDescriptor用法。  
@@ -24,6 +26,21 @@ INSERT INTO product (product_id, category_id, product_name, price) VALUES
   (2, 2, 'Northwind Traders Syrup', 7.5000),
   (3, 2, 'Northwind Traders Cajun Seasoning', 16.5000),
   (4, 3, 'Northwind Traders Olive Oil', 16.5000);
+```
+添加Entity，Entity定义参照： [基本概念](https://wz2cool.gitbooks.io/mybatis-dynamic-query-zh-cn/content/definition.html) 
+```java
+// 类名和表名做了映射
+@Table(name = "product")
+public class Product {
+    // 这里的productID 属性做了和数据库列的映射
+    @Column(name = "product_id")
+    private Integer productID;
+    private String productName;
+    private BigDecimal price;
+    private Integer categoryID;
+
+    // get/set ...
+}
 ```
 添加Mapper
 ```java
