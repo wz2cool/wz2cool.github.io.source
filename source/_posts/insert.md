@@ -13,56 +13,13 @@ mybatis 一个插入一个更新是最让我头痛的，不是多难而是很烦
 ## 准备工作 ##
 这里我们沿用[简单筛选](https://wz2cool.github.io/2017/07/25/filterBase/)里面的准备工作即可。
 ## 开始插入 ##
-### insert ###
-我们先试试全部属性插入
-```java
-@Test
-public void testInsert() throws Exception {
-        Product newProduct = new Product();
-        Integer id = ThreadLocalRandom.current().nextInt(1, 99999 + 1);
-        newProduct.setProductID(id);
-        newProduct.setCategoryID(1);
-        String productName = "Product" + id;
-        newProduct.setProductName(productName);
-
-        // insert.
-        ParamExpression paramExpression = mybatisQueryProvider.getInsertExpression(newProduct);
-        Map<String, Object> insertParam = new HashMap<>();
-        insertParam.put("insertExpression", paramExpression.getExpression());
-        insertParam.putAll(paramExpression.getParamMap());
-
-        int result = northwindDao.insert(insertParam);
-        assertEquals(1, result);
-}
-```
-输出可以看到，每个字段都在插入
-```bash
-==>  Preparing: INSERT INTO product (product_id, price, product_name, category_id) VALUES (?, ?, ?, ?) 
-==> Parameters: 26232(Integer), 20(BigDecimal), Product26232(String), 1(Integer)
-<==    Updates: 1
-Closing non transactio
-```
 ### insertSelective ###
-一般ID 是自生成的，我们不需要在插入的时候插入，这个时候我们使用@Column标注一下即可, 我们建一个和Product2实体类，唯一和Product 不一样就是我们设置id在null的时候不插入。
+默认插入就是insertSelective即，null的时候不插入，比如id 是自增列，我们可以不设置值
 ```java
-@Table(name = "product")
-public class Product2 {
-    // id 为null 的时候不插入
-    @Column(name = "product_id", insertIfNull = false)
-    private Integer productID;
-    private String productName;
-    private BigDecimal price;
-    private Integer categoryID;
-    // get/set...
-}
-```
-在测试代码中，我们也不去给productID 赋值
-```java
-@Test
+ @Test
 public void testInsertSelective() throws Exception {
-        Product2 newProduct = new Product2();
+        Product newProduct = new Product();
         newProduct.setCategoryID(1);
-        newProduct.setPrice(BigDecimal.valueOf(20));
         String productName = "Product";
         newProduct.setProductName(productName);
 
@@ -76,12 +33,53 @@ public void testInsertSelective() throws Exception {
         assertEquals(1, result);
 }
 ```
-输出我们就可以看到，product_id 没有赋值，并且插入成功
+输出可以看到，我们只是插入有值的数据，price 为null 所以没有插入
 ```bash
-==>  Preparing: INSERT INTO product (price, product_name, category_id) VALUES (?, ?, ?) 
-==> Parameters: 20(BigDecimal), Product(String), 1(Integer)
+==>  Preparing: INSERT INTO product (product_name, category_id) VALUES (?, ?) 
+==> Parameters: Product(String), 1(Integer)
 <==    Updates: 1
 ```
+### insert null ###
+刚才我们说到默认是null的时候不插入，那么我们无论某个列是否为null都要强制插入应该怎么做呢，这个时候就需要用的 @Column去控制。我们创建一个Product2实体类，唯一和Product不同的是我们强制price为null的时候也插入
+```java
+@Table(name = "product")
+public class Product2 {
+    @Column(name = "product_id")
+    private Integer productID;
+    private String productName;
+    @Column(insertIfNull = true)
+    private BigDecimal price;
+    private Integer categoryID;
+
+    // get/set
+}
+```
+基本和之前插入测试代码一样
+```java
+@Test
+public void testInsertNull() throws Exception {
+        Product2 newProduct = new Product2();
+        newProduct.setCategoryID(1);
+        String productName = "Product";
+        newProduct.setProductName(productName);
+
+        // insert.
+        ParamExpression paramExpression = mybatisQueryProvider.getInsertExpression(newProduct);
+        Map<String, Object> insertParam = new HashMap<>();
+        insertParam.put("insertExpression", paramExpression.getExpression());
+        insertParam.putAll(paramExpression.getParamMap());
+
+        int result = northwindDao.insert(insertParam);
+        assertEquals(1, result);
+}
+```
+输出我们看到，price是null也被强制放入插入字段中
+```bash
+==>  Preparing: INSERT INTO product (price, product_name, category_id) VALUES (?, ?, ?) 
+==> Parameters: null, Product(String), 1(Integer)
+<==    Updates: 1
+```
+
 ## 结束 ##
 因为没有写死所有的属性在XML中，所以以后添加字段，修改字段删除字段都不用再改XML文件，并且用@Column去控制InsertSelective，可以达到更小的粒度控制。
 
