@@ -7,7 +7,7 @@ tags:
 ---
 项目地址：https://github.com/wz2cool/mybatis-dynamic-query  
 文档地址：https://wz2cool.gitbooks.io/mybatis-dynamic-query-zh-cn/content/
-## 问题 ##
+## 简介 ##
 更新和插入的问题其实是一样的，基本上我们可以解决方案也是类似的，唯一的不同就是，一般更新的时候我们都是带筛选条件的。常用我们都是通过ID筛选去找记录，但是现在有了前面的知识，这个筛选条件真的是so easy!!!   
 关于粒度的控制，同样可以使用@Column 中的 updateIfNull 标记来达到 updateSelective效果。  
 废话不多说上代码
@@ -104,4 +104,8 @@ public void testUpdateNull() throws Exception {
 ```
 
 ## 结束 ##
-更新和插入还是有点区别的，对于插入的时候，我们设置的默认值是如果null仍然插入
+更新和插入基本操作是一样的，唯一就是多了后面支持动态查询。
+
+## 关注@我　##
+最后大家可以关注我和 Mybatis-Dynamic-query项目 ^_^
+<a class="github-button" href="https://github.com/wz2cool" data-size="large" data-show-count="true" aria-label="Follow @wz2cool on GitHub">Follow @wz2cool</a> <a class="github-button" href="https://github.com/wz2cool/mybatis-dynamic-query" data-size="large" data-show-count="true" aria-label="Star wz2cool/mybatis-dynamic-query on GitHub">Star</a> <a class="github-button" href="https://github.com/wz2cool/mybatis-dynamic-query/fork" data-size="large" data-show-count="true" aria-label="Fork wz2cool/mybatis-dynamic-query on GitHub">Fork</a>

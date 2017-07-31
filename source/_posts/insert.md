@@ -7,7 +7,7 @@ tags:
 ---
 项目地址：https://github.com/wz2cool/mybatis-dynamic-query  
 文档地址：https://wz2cool.gitbooks.io/mybatis-dynamic-query-zh-cn/content/
-## 问题 ##
+## 简介 ##
 mybatis 一个插入一个更新是最让我头痛的，不是多难而是很烦，每次加一个字段必定这两个地方要改，曾经也看过别人写的一个[mybatis-jpa](http://www.cnblogs.com/svili/p/7232323.html#3743019)，觉得不错，里面已经封装了一些常用的方法映射。  
 如果用mybatis常用的插入方法有两个：insert和insertSelective，区别在于insert 每个值都会插入，insertSelective只是插非null的值。这里有个小问题，就是insertSelective粒度太大了，是对于所有的值都是插入非null。这里就可以用@Column 中的 insertIfNull 去对每个列进行控制，当然这个后面降到 @Column 用法再细细描述，这里还是用个简单例子来说明insert的用法。
 ## 准备工作 ##
