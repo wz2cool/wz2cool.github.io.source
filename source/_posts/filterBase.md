@@ -14,7 +14,7 @@ FilterDescriptor 定义可以参照：[FilterDescriptor类](https://wz2cool.gitb
 创建一张产品表
 ```sql
 CREATE TABLE product (
-  product_id    INT PRIMARY KEY,
+  product_id    INT PRIMARY KEY auto_increment,
   category_id   INT NOT NULL,
   product_name  VARCHAR (50) NOT NULL,
   price         DECIMAL
