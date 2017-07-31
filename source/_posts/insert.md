@@ -55,7 +55,7 @@ public class Product2 {
     private Integer categoryID;
     // get/set...
 }
-```java
+```
 在测试代码中，我们也不去给productID 赋值
 ```java
 @Test
