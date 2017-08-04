@@ -13,8 +13,9 @@ tags:
 废话不多说上代码
 ## 准备工作 ##
 这里我们沿用[简单筛选](https://wz2cool.github.io/2017/07/25/filterBase/)里面的准备工作即可。
+## 开始更新 ##
 ### update ###
-和insert 相反，默认是null的时候我们不更新。
+和insert 一样，默认是null的时候我们不更新。
 ```java
 @Test
 public void testUpdate() throws Exception {
