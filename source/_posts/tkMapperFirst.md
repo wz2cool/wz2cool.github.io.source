@@ -6,6 +6,7 @@ tags:
 - java
 ---
 在博客园发表Mybatis Dynamic Query后，一位园友问我知不知道通用mapper，仔细去找了一下，还真的有啊，比较好的就是abel533写的[tk.mybatis.mapper](https://github.com/abel533/Mapper)。  
+本次例子地址：https://github.com/wz2cool/tk-mybatis-demo
 
 ## 传统Mybatis用法 ##
 ### Spring boot ###
@@ -212,7 +213,8 @@ public class SimpleTkMapperTest {
 ### 优势 ###
 1. 无需xml文件和Dao 对应。
 2. 无需指定xml 文件位置（因为就没有xml文件）。
-3. 自带多种常用方法。
+3. 自带多种常用方法。 
+
 ### 困惑（仅代表个人观点） ###
 1. 自带的方法多但是有些方法理解很晦涩，比如 deleteByExample(Object var1)，这里给一个object 我都不知道要填什么，是填写主键呢还是这个实体呢？(后来了解其实example 应该是一个筛选条件)
 
@@ -238,3 +240,17 @@ public void selectByExampleTest() {
 <==        Row: 2, Condiments, test
 <==      Total: 2
 ```
+
+## 结束 ##
+这个只是我初次使用tk.mybatis.mapper 确实不错，可以减少工作量，好像还有可以生成Dao和mapper 的工具，这个我以后再试试看。  
+### 要有自己的Mapper ###
+看了 tk.mybatis.mapper 以后，觉得通用mapper 也应该加入到 Mybatis Dynamic Query 中去，当然实现可能有点不一样。
+### 关于 tk.mybatis.mapper 问题 ###
+这里真的想问问园友了
+1. tk.mybatis.mapper 支持多表筛选么（join），我自己好像没有找到。
+2. tk.mybatis.mapper 支持组么，就是类似于 (id > 1 and id < 5) and price = 10. 
+
+
+## 关注我　##
+最后大家可以关注我和 Mybatis-Dynamic-query项目 ^_^
+<a class="github-button" href="https://github.com/wz2cool" data-size="large" data-show-count="true" aria-label="Follow @wz2cool on GitHub">Follow @wz2cool</a> <a class="github-button" href="https://github.com/wz2cool/mybatis-dynamic-query" data-size="large" data-show-count="true" aria-label="Star wz2cool/mybatis-dynamic-query on GitHub">Star</a> <a class="github-button" href="https://github.com/wz2cool/mybatis-dynamic-query/fork" data-size="large" data-show-count="true" aria-label="Fork wz2cool/mybatis-dynamic-query on GitHub">Fork</a>
