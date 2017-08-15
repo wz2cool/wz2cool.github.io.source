@@ -1,5 +1,5 @@
 ---
-title: 新增DynamicQuery类
+title: 2.0新增DynamicQuery类
 date: 2017-08-11 17:51:55
 tags:
 - java

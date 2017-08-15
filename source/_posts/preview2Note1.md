@@ -21,3 +21,11 @@ tags:
 ### 去除了DatabaseType ###
 &nbsp;&nbsp;&nbsp;&nbsp;设计之初本来是想统一处理各个数据库不同的，比如大多数数据库对于查询条件都是隐形转化的，比如你一个DateTime列，你用一个String 可以查询到，但是到了postresql就有问题了，postresql必须保证类型一致性。再比如一个位运算，大多数数据库直接一个 & 符号就可以了，但是到了H2数据库必须调用BITAND方法才能够完成。这样的处理所有的情况就变成一个很大的工程。   
 &nbsp;&nbsp;&nbsp;&nbsp;去除以后会加上一个CustomFilterDescriptor 让用户自己处理一个自定义查询，这样可扩展性高，而且框架也不用处理很多特殊情况了。
+
+### tk.mybatis.mapper MDQ化 ###
+这个就是2.0基本目的，就是通用mapper整合进来（还好tk.mybatis.mapper 是MIT许可），让筛选部分MDQ话。
+
+## 最后 ##
+整合以后，我想我们会更加方便的使用mybatis。
+1. 对于单表我们不必再创建xml与之对应，继承一个通用mapper即可。
+2. 对于多表复杂查询，我们仍然可以使用MDQ来查询。
