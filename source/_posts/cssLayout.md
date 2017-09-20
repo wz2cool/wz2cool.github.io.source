@@ -136,7 +136,7 @@ padding 的上下左右
 ```
 
 ### .center-vertical
-![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/hor-center.png)
+![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/ver-center.png)
 ```html
 <div class="center-container center-vertical" style="background: #EE91AD; width: 200px; height: 50px">
     <div class="center-panel">
