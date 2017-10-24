@@ -128,7 +128,8 @@ const pool = mysql.createPool({
 ## BaseTableMapper
 继承BaseMybatisMapper，提供基本的CRUD功能，基本上就是通用mapper
 
-# BaseTableMapper实战
+# 实战
+## BaseTableMapper实战
 注：测试都是基于Sqlite
 1. 创建表
 ```sql
@@ -219,7 +220,7 @@ params:  [ 3 ]
 √ should return seq after inserting a new row (92ms)
 ```
 
-# 依赖注入（inversify）实战
+## 依赖注入（inversify）实战
 老实说inversify这个东西我还不是非常明白，如果有错误欢迎指正。
 1. 构造一个可注入的sqlitedb 封装
 ```java
@@ -342,8 +343,53 @@ describe("inject Test", () => {
         });
 });
 ```
+## mybatis 风格查询
+1.添加模板， 这里我们看到 #{price} 就是一个站位
+```java
+export class ProductViewTemplate {
+    public static getSelectPriceGreaterThan20(): string {
+        const columnAs = SqlTemplateProvider.getColumnsExpression(NorthwindProductView);
+        const query = `SELECT ${columnAs} FROM Product LEFT JOIN Category ` +
+            `ON Product.CategoryId = Category.Id WHERE Product.UnitPrice > #{price}`;
+        return query;
+    }
+}
+```
 
-# 分页实战
+2. 查询，这里我们把参数放到一个map里面
+```java
+describe("base Mapper test", () => {
+    const productViewMapper = myContainer.get<ProductViewMapper>(ProductViewMapper);
+        it("mybatis style sql template", (done) => {
+            const query = ProductViewTemplate.getSelectPriceGreaterThan20();
+            const paramMap: { [key: string]: any } = {};
+            // 这里属性为price 的值为20
+            paramMap.price = 20;
+            productViewMapper.mybatisSelectEntities(query, paramMap)
+                .then((priceViews) => {
+                    if (priceViews.length > 0) {
+                        done();
+                    } else {
+                        done("should have items");
+                    }
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+}
+```
+
+3. 查询结果
+```bash
+base Mapper test
+sql:  SELECT Product.Id AS product_id, Product.ProductName AS product_name, Product.UnitPrice AS unit_price, Category.CategoryName AS category_name FROM Product LEFT JOIN Category ON Product.CategoryId = Categor
+y.Id WHERE Product.UnitPrice > ?
+params:  [ 20 ]
+√ mybatis style sql template
+```
+
+## 分页
 基于上面的注入实战，
 1. 添加动态查询模板
 ```java
@@ -421,6 +467,7 @@ params:  [ 20 ]
 
 ## 结束 ##
 为了这次1024，我真是有点赶想让大家早点看看这个项目，当然还有很多测试要做。
+而且我这里并没有讲动态查询，后面的文章会补上。
 祝大家节日快乐。 
 
 
