@@ -58,6 +58,26 @@ export class NorthwindProductView extends Entity {
 }
 ```
 
+## RowBounds 类
+对的，你们没看错，这个就是类似于mybatis 中的 rowBounds, 多的我就不解释了
+
+## PageRowBounds 类
+对的这个同样来自于我们熟悉的abel533 大神写的PageHelper
+项目地址： https://github.com/pagehelper/Mybatis-PageHelper
+
+## Page<> 
+我们可以直接使用PageRowRounds，查询返回这个Page，具体可以看实战分页
+```java
+export class Page<T extends Entity> {
+    private pageNum: number;
+    private pageSize: number;
+    private total: number;
+    private pages: number;
+    private entities: T[];
+    ...
+}
+```
+
 ## ISqlConnection
 确实没有mybatis那么强大驱动，而且js数据库驱动都是来自其他库（千差万别），所以我们可能需要自己实现一下
 ```java
@@ -196,5 +216,214 @@ sql:  SELECT seq FROM sqlite_sequence WHERE name = ?
 params:  [ 'users' ]
 sql:  SELECT id AS id, username AS username, password AS password FROM users WHERE id = ?
 params:  [ 3 ]
-      √ should return seq after inserting a new row (92ms)
+√ should return seq after inserting a new row (92ms)
 ```
+
+# 依赖注入（inversify）实战
+老实说inversify这个东西我还不是非常明白，如果有错误欢迎指正。
+1. 构造一个可注入的sqlitedb 封装
+```java
+import { injectable } from "inversify";
+import * as path from "path";
+// 这个必须引入
+import "reflect-metadata";
+import * as sqlite3 from "sqlite3";
+
+@injectable()
+export class InjectableSqlitedb {
+    public readonly sqlitedb: sqlite3.Database;
+
+    constructor() {
+        const dbPath = path.join(__dirname, "../../northwind.db");
+        this.sqlitedb = new sqlite3.Database(dbPath);
+    }
+}
+```
+2. 构造一个可注入的SqliteConnection
+```java
+import { injectable } from "inversify";
+import * as path from "path";
+import "reflect-metadata";
+import * as sqlite3 from "sqlite3";
+import { SqliteConnection } from "../../../src";
+import { InjectableSqlitedb } from "./injectableSqlitedb";
+
+@injectable()
+export class InjectableSqliteConnection extends SqliteConnection {
+    constructor(db: InjectableSqlitedb) {
+        super(db.sqlitedb);
+    }
+}
+```
+3. 建立视图实体
+```java
+export class NorthwindProductView extends Entity {
+    @column("Id", "Product")
+    public productId: number;
+    @column("ProductName", "Product")
+    public productName: string;
+    @column("UnitPrice", "Product")
+    public unitPrice: number;
+    @column("CategoryName", "Category")
+    public categoryName: string;
+}
+```
+4. 构造一个可注入的mapper
+```java
+import { inject, injectable } from "inversify";
+import "reflect-metadata";
+import { BaseMybatisMapper, ISqlConnection } from "../../../src";
+import { InjectableSqliteConnection } from "../connection/injectableSqliteConnection";
+import { NorthwindProductView } from "../entity/view/NothwindProductView";
+
+@injectable()
+export class ProductViewMapper extends BaseMybatisMapper<NorthwindProductView> {
+    constructor(connection: InjectableSqliteConnection) {
+        super(connection);
+    }
+
+    public getEntityClass(): new () => NorthwindProductView {
+        return NorthwindProductView;
+    }
+}
+```
+
+5. 创造一个专门生成sql 的js 文件 （类似于mybatis xml文件）
+```java
+import { CommonHelper, DynamicQuery, Entity, EntityHelper, SqlTemplate, SqlTemplateProvider } from "../../../src";
+import { NorthwindProductView } from "../entity/view/NothwindProductView";
+
+export class ProductViewTemplate {
+    public static getSelectProductViewByDynamicQuery(dynamicQuery: DynamicQuery<NorthwindProductView>): SqlTemplate {
+        const columnAs = SqlTemplateProvider.getColumnsExpression(NorthwindProductView);
+        const filterSqlTemplate = SqlTemplateProvider.getFilterExpression(NorthwindProductView, dynamicQuery.filters);
+        const sortSqlTemplate = SqlTemplateProvider.getSortExpression(NorthwindProductView, dynamicQuery.sorts);
+        const params = [];
+        const wherePlaceholder = CommonHelper.isNotBlank(filterSqlTemplate.sqlExpression)
+            ? `WHERE ${filterSqlTemplate.sqlExpression}`
+            : ``;
+        const orderByPlaceholder = CommonHelper.isNotBlank(sortSqlTemplate.sqlExpression)
+            ? `ORDER BY ${sortSqlTemplate.sqlExpression}`
+            : ``;
+
+        const query = `SELECT ${columnAs} FROM Product LEFT JOIN Category ` +
+            `ON Product.CategoryId = Category.Id ${wherePlaceholder} ${orderByPlaceholder}`;
+
+        const sqlTemplate = new SqlTemplate();
+        sqlTemplate.sqlExpression = query;
+        sqlTemplate.params = sqlTemplate.params.concat(filterSqlTemplate.params).concat(sortSqlTemplate.params);
+        return sqlTemplate;
+    }
+}
+```
+
+6. 绑定
+```java
+import { Container } from "inversify";
+import "reflect-metadata";
+import { InjectableSqliteConnection } from "./connection/injectableSqliteConnection";
+import { InjectableSqlitedb } from "./connection/injectableSqlitedb";
+import { NorthwindProductView } from "./entity/view/NothwindProductView";
+import { ProductViewMapper } from "./mapper/productViewMapper";
+import { ProductViewTemplate } from "./template/productViewTemplate";
+
+const myContainer = new Container();
+myContainer.bind<InjectableSqliteConnection>(InjectableSqliteConnection).toSelf();
+myContainer.bind<ProductViewMapper>(ProductViewMapper).toSelf();
+myContainer.bind<InjectableSqlitedb>(InjectableSqlitedb).toSelf();
+```
+
+7. 测试注入
+```java
+describe("inject Test", () => {
+    it("should get inject value", () => {
+            const productViewMapper = myContainer.get<ProductViewMapper>(ProductViewMapper);
+            expect(false).to.be.eq(CommonHelper.isNullOrUndefined(productViewMapper));
+        });
+});
+```
+
+# 分页实战
+基于上面的注入实战，
+1. 添加动态查询模板
+```java
+export class ProductViewTemplate {
+    // 这个就是以前的动态查询，请查看 mybatis-dynamic-query
+    public static getSelectProductViewByDynamicQuery(dynamicQuery: DynamicQuery<NorthwindProductView>): SqlTemplate {
+        const columnAs = SqlTemplateProvider.getColumnsExpression(NorthwindProductView);
+        const filterSqlTemplate = SqlTemplateProvider.getFilterExpression(NorthwindProductView, dynamicQuery.filters);
+        const sortSqlTemplate = SqlTemplateProvider.getSortExpression(NorthwindProductView, dynamicQuery.sorts);
+        const params = [];
+        const wherePlaceholder = CommonHelper.isNotBlank(filterSqlTemplate.sqlExpression)
+            ? `WHERE ${filterSqlTemplate.sqlExpression}`
+            : ``;
+        const orderByPlaceholder = CommonHelper.isNotBlank(sortSqlTemplate.sqlExpression)
+            ? `ORDER BY ${sortSqlTemplate.sqlExpression}`
+            : ``;
+
+        const query = `SELECT ${columnAs} FROM Product LEFT JOIN Category ` +
+            `ON Product.CategoryId = Category.Id ${wherePlaceholder} ${orderByPlaceholder}`;
+
+        const sqlTemplate = new SqlTemplate();
+        sqlTemplate.sqlExpression = query;
+        sqlTemplate.params = sqlTemplate.params.concat(filterSqlTemplate.params).concat(sortSqlTemplate.params);
+        return sqlTemplate;
+    }
+
+    public static getSelectPriceGreaterThan20(): string {
+        const columnAs = SqlTemplateProvider.getColumnsExpression(NorthwindProductView);
+        const query = `SELECT ${columnAs} FROM Product LEFT JOIN Category ` +
+            `ON Product.CategoryId = Category.Id WHERE Product.UnitPrice > #{price}`;
+        return query;
+    }
+}
+```
+2. 分页实战
+```java
+it("paging", (done) => {
+            const priceFilter =
+                new FilterDescriptor<NorthwindProductView>((u) => u.unitPrice, FilterOperator.LESS_THAN, 20);
+            const nameSort =
+                new SortDescriptor<NorthwindProductView>((u) => u.productName);
+            const dynamicQuery = DynamicQuery.createIntance<NorthwindProductView>()
+                .addFilters(priceFilter).addSorts(nameSort);
+
+            const sqlTemplate = ProductViewTemplate.getSelectProductViewByDynamicQuery(dynamicQuery);
+            const pageRowBounds = new PageRowBounds(1, 20);
+            productViewMapper
+                .selectEntitiesPageRowBounds(sqlTemplate.sqlExpression, sqlTemplate.params, pageRowBounds)
+                .then((page) => {
+                    const pageIndexEq = page.getPageNum() === pageRowBounds.getPageNum();
+                    const pageSizeEq = page.getPageSize() === pageRowBounds.getPageSize();
+                    const entitiesCountEq = page.getEntities.length <= pageRowBounds.getPageSize();
+                    const pagesEq = page.getPages() === Math.ceil(page.getTotal() / page.getPageSize());
+                    if (pageIndexEq && pageSizeEq && entitiesCountEq && pagesEq) {
+                        done();
+                    } else {
+                        done("something is invalid");
+                    }
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+```
+3. 输出分页
+```bash
+sql:  SELECT Product.Id AS product_id, Product.ProductName AS product_name, Product.UnitPrice AS unit_price, Category.CategoryName AS category_name FROM Product LEFT JOIN Category ON Product.CategoryId = Categor
+y.Id WHERE Product.UnitPrice < ? ORDER BY Product.ProductName ASC limit 0, 20
+params:  [ 20 ]
+selec Count sql:  SELECT COUNT(0) FROM (SELECT Product.Id AS product_id, Product.ProductName AS product_name, Product.UnitPrice AS unit_price, Category.CategoryName AS category_name FROM Product LEFT JOIN Catego
+ry ON Product.CategoryId = Category.Id WHERE Product.UnitPrice < ? ORDER BY Product.ProductName ASC) AS t
+params:  [ 20 ]
+√ paging
+```
+
+## 结束 ##
+为了这次1024，我真是有点赶想让大家早点看看这个项目，当然还有很多测试要做。
+祝大家节日快乐。 
+
+
+## 关注我　##
+最后大家可以关注我和 tsbatis项目 ^_^
+<a class="github-button" href="https://github.com/wz2cool" data-size="large" data-show-count="true" aria-label="Follow @wz2cool on GitHub">Follow @wz2cool</a> <a class="github-button" href="https://github.com/wz2cool/tsbatis" data-size="large" data-show-count="true" aria-label="Star wz2cool/tsbatis on GitHub">Star</a> <a class="github-button" href="https://github.com/wz2cool/tsbatis" data-size="large" data-show-count="true" aria-label="Fork wz2cooltsbatis on GitHub">Fork</a>
