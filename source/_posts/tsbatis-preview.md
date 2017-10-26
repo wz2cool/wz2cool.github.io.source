@@ -7,6 +7,7 @@ tags:
 ---
 # 前言
 在发布了 [mybatis-dynamic-query](https://github.com/wz2cool/mybatis-dynamic-query)之后感觉基本功能稳定了，而且现在在工作项目开发效率大大提高，而且非常易于维护。 最近准备带几个小朋友以前用typescript 打通前后端，当写node写数据库的时候，我就发现非常麻烦，当时就想，为啥js 没有类似于mybatis 框架，然后。。。 就写了tsBatis (typescript + mybatis)
+项目地址：https://github.com/wz2cool/tsbatis  
 
 # TsBatis
 tsbatis：诞生的目的是希望把mybatis一些思想借鉴过来（当然现在肯定没mybatis 强大）。  
@@ -21,7 +22,7 @@ typescript：我是蛮反对写普通js 的，我觉得会比较难维护，而�
 ## @column
 这是核心注解，里面的参数和mybatis里面@Column注解类似。  
 两种构造：  
-1. 表列（只要指定列名和是否是一个key，是否可以插入）
+1.表列（只要指定列名和是否是一个key，是否可以插入）
 ```java
 import { column, TableEntity } from "../../../src";
 export class Customer extends TableEntity {
@@ -43,7 +44,7 @@ export class Customer extends TableEntity {
     }
 }
 ```
-2. 视图列 （指定列名和表名）
+2.视图列 （指定列名和表名）
 ```java
 import { column, Entity } from "../../../../src";
 export class NorthwindProductView extends Entity {
@@ -98,7 +99,7 @@ export interface ISqlConnection {
 
 ## SqliteConnection
 实现ISqlConnection 接口，是我自己实现的一套sqlite版本主要用于测试。
-数据库驱动：https://github.com/mapbox/node-sqlite3
+数据库驱动：https://github.com/mapbox/node-sqlite3  
 ```java
 const dbPath = path.join(__dirname, "../../northwind.db");
  // 传入到SqliteConnection 构造方法
@@ -131,7 +132,7 @@ const pool = mysql.createPool({
 # 实战
 ## BaseTableMapper实战
 注：测试都是基于Sqlite
-1. 创建表
+1.创建表  
 ```sql
 CREATE TABLE users (
     id          INTEGER PRIMARY KEY autoincrement,
@@ -139,7 +140,7 @@ CREATE TABLE users (
     password    VARCHAR(64)
 );
 ```
-2. 创建表实体
+2.创建表实体  
 ```java
 export class User extends TableEntity {
     @column("id", true, false)
@@ -154,7 +155,7 @@ export class User extends TableEntity {
     }
 }
 ```
-3. 创建UserMapper
+3.创建UserMapper  
 ```java
 export class UserMapper extends BaseTableMapper<User> {
     constructor(sqlConnection: ISqlConnection) {
@@ -168,7 +169,7 @@ export class UserMapper extends BaseTableMapper<User> {
     }
 }
 ```
-4. 组合SqliteConnection 到 UserMapper
+4.组合SqliteConnection 到 UserMapper  
 ```java
 const dbPath = path.join(__dirname, "../sqlite.db");
 const db = new sqlite3.Database(dbPath);
@@ -176,7 +177,7 @@ const connection = new SqliteConnection(db);
 const userMapper = new UserMapper(connection);
 ```
 
-5. 插入数据
+5.插入数据  
 ```java
 describe("#insert", () => {
         it("should return seq after inserting a new row", (done) => {
@@ -209,7 +210,7 @@ describe("#insert", () => {
         });
 });
 ```
-6. 输出, Sqlite 直接拿不到自增id，需要在查询一下 sqlite_sequence
+6.输出, Sqlite 直接拿不到自增id，需要在查询一下 sqlite_sequence   
 ```bash
 sql:  INSERT INTO users (username,password) VALUES (?, ?)
 params:  [ 'frankTest', 'pwd' ]
@@ -221,8 +222,8 @@ params:  [ 3 ]
 ```
 
 ## 依赖注入（inversify）实战
-老实说inversify这个东西我还不是非常明白，如果有错误欢迎指正。
-1. 构造一个可注入的sqlitedb 封装
+老实说inversify这个东西我还不是非常明白，如果有错误欢迎指正。  
+1.构造一个可注入的sqlitedb 封装
 ```java
 import { injectable } from "inversify";
 import * as path from "path";
@@ -240,7 +241,8 @@ export class InjectableSqlitedb {
     }
 }
 ```
-2. 构造一个可注入的SqliteConnection
+
+2.构造一个可注入的SqliteConnection  
 ```java
 import { injectable } from "inversify";
 import * as path from "path";
@@ -256,7 +258,8 @@ export class InjectableSqliteConnection extends SqliteConnection {
     }
 }
 ```
-3. 建立视图实体
+
+3.建立视图实体
 ```java
 export class NorthwindProductView extends Entity {
     @column("Id", "Product")
@@ -269,7 +272,8 @@ export class NorthwindProductView extends Entity {
     public categoryName: string;
 }
 ```
-4. 构造一个可注入的mapper
+
+4.构造一个可注入的mapper
 ```java
 import { inject, injectable } from "inversify";
 import "reflect-metadata";
@@ -289,7 +293,7 @@ export class ProductViewMapper extends BaseMybatisMapper<NorthwindProductView> {
 }
 ```
 
-5. 创造一个专门生成sql 的js 文件 （类似于mybatis xml文件）
+5.创造一个专门生成sql 的js 文件 （类似于mybatis xml文件）
 ```java
 import { CommonHelper, DynamicQuery, Entity, EntityHelper, SqlTemplate, SqlTemplateProvider } from "../../../src";
 import { NorthwindProductView } from "../entity/view/NothwindProductView";
@@ -318,7 +322,7 @@ export class ProductViewTemplate {
 }
 ```
 
-6. 绑定
+6.绑定
 ```java
 import { Container } from "inversify";
 import "reflect-metadata";
@@ -334,7 +338,7 @@ myContainer.bind<ProductViewMapper>(ProductViewMapper).toSelf();
 myContainer.bind<InjectableSqlitedb>(InjectableSqlitedb).toSelf();
 ```
 
-7. 测试注入
+7.测试注入
 ```java
 describe("inject Test", () => {
     it("should get inject value", () => {
@@ -356,7 +360,7 @@ export class ProductViewTemplate {
 }
 ```
 
-2. 查询，这里我们把参数放到一个map里面
+2.查询，这里我们把参数放到一个map里面  
 ```java
 describe("base Mapper test", () => {
     const productViewMapper = myContainer.get<ProductViewMapper>(ProductViewMapper);
@@ -380,7 +384,7 @@ describe("base Mapper test", () => {
 }
 ```
 
-3. 查询结果
+3.查询结果  
 ```bash
 base Mapper test
 sql:  SELECT Product.Id AS product_id, Product.ProductName AS product_name, Product.UnitPrice AS unit_price, Category.CategoryName AS category_name FROM Product LEFT JOIN Category ON Product.CategoryId = Categor
@@ -391,7 +395,7 @@ params:  [ 20 ]
 
 ## 分页
 基于上面的注入实战，
-1. 添加动态查询模板
+1.添加动态查询模板  
 ```java
 export class ProductViewTemplate {
     // 这个就是以前的动态查询，请查看 mybatis-dynamic-query
@@ -424,7 +428,7 @@ export class ProductViewTemplate {
     }
 }
 ```
-2. 分页实战
+2.分页查询  
 ```java
 it("paging", (done) => {
             const priceFilter =
@@ -454,7 +458,7 @@ it("paging", (done) => {
                 });
         });
 ```
-3. 输出分页
+3.输出分页
 ```bash
 sql:  SELECT Product.Id AS product_id, Product.ProductName AS product_name, Product.UnitPrice AS unit_price, Category.CategoryName AS category_name FROM Product LEFT JOIN Category ON Product.CategoryId = Categor
 y.Id WHERE Product.UnitPrice < ? ORDER BY Product.ProductName ASC limit 0, 20
