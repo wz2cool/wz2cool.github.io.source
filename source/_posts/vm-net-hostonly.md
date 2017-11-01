@@ -1,5 +1,5 @@
 ---
-title: virualbox 安装 otter 准备环境
+title: virualbox 安装 otter 必备软件
 date: 2017-11-01 15:43:09
 tags:
 - centos7
