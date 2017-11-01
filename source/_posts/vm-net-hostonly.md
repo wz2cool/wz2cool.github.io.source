@@ -5,7 +5,7 @@ tags:
 - centos7
 ---
 # 前言
-最近研究了一下阿里otter项目（分布式数据库同步），所以就在virualbox 上开始准备，遇到了不少坑，所以记录一下啊。   
+最近研究了一下阿里otter项目（分布式数据库同步），所以就在virualbox 上开始准备学习一下，遇到了不少坑，所以记录一下啊。   
 otter 项目：https://github.com/alibaba/otter
 - win10 无法运行virualbox 5.x版本以上运行
 - 使用Host-only 主机和虚拟机互通，（win10 更新导致桥接不可用）
