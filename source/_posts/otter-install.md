@@ -36,6 +36,7 @@ tags:
 2013-08-14 13:19:45.911 [] WARN  com.alibaba.otter.manager.deployer.OtterManagerLauncher - ## the manager server is running now ......
 ```
 6. 验证  
+打开：http://192.168.56.101:8080/   （我自己manager ip 为192.168.56.101）
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/managerUI.png)   
 初始密码为: admin/admin
 
