@@ -106,3 +106,18 @@ CREATE TABLE  `test`.`example` (
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/createtableMapping.png)  
 到这里就是很简单的选择，源数据表选择managedb中 test数据库的exmple表，目标数据表选择node1db 中的example 表。  
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tablemapping.png)  
+8. 执行channel   
+回到channl 管理点击启用按钮。   
+![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/runchanenl.png) 
+
+# 最终验证
+你在mangerdb 中任何改动都会同步到node上，  
+1. 添加数据
+![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/result.png) 
+2. 添加一列  
+![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/addcolumn.png) 
+
+# 最后
+终于把otter 入门测试环境搭建好了，里面省去教程很多不必要步骤，而且还提醒大家在搭建时候遇到的坑，希望大家喜欢，有任何问题欢迎指教。  
+
+参考：https://github.com/alibaba/otter/wiki/QuickStart
