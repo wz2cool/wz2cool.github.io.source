@@ -87,7 +87,7 @@ server-id=1
 `$ tar -xvf zookeeper-3.4.9.tar.gz -C /tmp/`  
 `$ cd /tmp/zookeeper-3.4.9/conf`
 `$ mv zoo_sample.cfg zoo.cfg`
-`$ cd..`  
+`$ cd ..`  
 `$ ./bin/zkServer.sh start`
 
 嗯 基本上otter 要的东西都准备好了，后面开始otter 安装。
