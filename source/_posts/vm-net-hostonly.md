@@ -86,7 +86,7 @@ server-id=1
 `$ wget http://ftp.jaist.ac.jp/pub/apache/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz`    
 `$ tar -xvf zookeeper-3.4.9.tar.gz -C /tmp/`  
 `$ cd /tmp/zookeeper-3.4.9/conf`
-`$ mv zoo.example.cfg zoo.cfg`
+`$ mv zoo_sample.cfg zoo.cfg`
 `$ cd..`  
 `$ ./bin/zkServer.sh start`
 
