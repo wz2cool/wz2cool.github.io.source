@@ -86,8 +86,8 @@ server-id=1
 `$ wget http://ftp.jaist.ac.jp/pub/apache/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz`    
 `$ tar -xvf zookeeper-3.4.9.tar.gz -C /tmp/`  
 `$ cd /tmp/zookeeper-3.4.9/conf`
-`$ mv zoo.example.cfg zoo.cfg`
-`$ cd..`  
+`$ mv zoo_sample.cfg zoo.cfg`
+`$ cd ..`  
 `$ ./bin/zkServer.sh start`
 
 嗯 基本上otter 要的东西都准备好了，后面开始otter 安装。
