@@ -1,7 +1,7 @@
 ---
 title: virualbox 搭建 otter
 date: 2017-11-01 18:03:43
-tags:
+tags: otter
 ---
 # 前言
 为了学习otter，上一篇我们讲到了 otter 必要软件的安装，参考：[virualbox 安装 otter 必备软件](https://wz2cool.github.io/2017/11/01/vm-net-hostonly/)，现在安装otter，相比官方文档，我们尽量简化安装步骤。     
