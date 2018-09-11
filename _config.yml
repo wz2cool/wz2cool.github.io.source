@@ -10,6 +10,14 @@ author: wz2cool
 language: zh-CN
 timezone:
 
+
+server:
+  port: 9111 # or anohter number
+  log: false
+  ip: 0.0.0.0
+  compress: false
+  header: true
+
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://wz2cool.github.io
