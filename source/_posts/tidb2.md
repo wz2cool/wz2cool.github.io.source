@@ -1,5 +1,5 @@
 ---
-title: (二) 虚拟机搭建 TiDB-Ansible 部署方案
+title: TiDB入门（二）：虚拟机搭建 TiDB-Ansible 部署方案
 date: 2019-02-07 15:48:05
 tags:
   - TiDB

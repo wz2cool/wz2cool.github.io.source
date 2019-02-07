@@ -1,5 +1,5 @@
 ---
-title: (一) TiDB 简介
+title: TiDB入门（一）：TiDB 简介
 date: 2019-02-07 10:50:58
 tags:
   - TiDB
