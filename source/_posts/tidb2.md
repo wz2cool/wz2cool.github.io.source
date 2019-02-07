@@ -80,7 +80,234 @@ $ swapoff /dev/mapper/centos-swap
 
 ## 在中控机上安装系统依赖包
 
-因为使用模板都是 centOS 7, 执行一下命令：
+以 root 登录 ansible_Manager 中控机  
+因为使用模板都是 centOS 7, 执行以下命令：
+
+```java
+$ yum -y install epel-release git curl sshpass
+$ yum -y install python-pip
+```
+
+## 在中控机上创建 tidb 用户，并生成 ssh key
+
+以 root 用户登录中控机，执行以下命令  
+创建 tidb 用户
+
+```java
+$ useradd -m -d /home/tidb tidb
+```
+
+设置 tidb 用户密码
+
+```java
+$ passwd tidb
+```
+
+配置 tidb 用户 sudo 免密码，将 tidb ALL=(ALL) NOPASSWD: ALL 添加到文件末尾即可。
+
+```java
+$ visudo
+tidb ALL=(ALL) NOPASSWD: ALL
+```
+
+生成 ssh key: 执行 su 命令从 root 用户切换到 tidb 用户下。
+
+```java
+# su - tidb
+```
+
+创建 tidb 用户 ssh key， 提示 Enter passphrase 时直接回车即可。执行成功后，ssh 私钥文件为 /home/tidb/.ssh/id_rsa， ssh 公钥文件为 /home/tidb/.ssh/id_rsa.pub。
+
+```java
+$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/tidb/.ssh/id_rsa):
+Created directory '/home/tidb/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/tidb/.ssh/id_rsa.
+Your public key has been saved in /home/tidb/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:eIBykszR1KyECA/h0d7PRKz4fhAeli7IrVphhte7/So tidb@172.16.10.49
+The key's randomart image is:
++---[RSA 2048]----+
+|=+o+.o.          |
+|o=o+o.oo         |
+| .O.=.=          |
+| . B.B +         |
+|o B * B S        |
+| * + * +         |
+|  o + .          |
+| o  E+ .         |
+|o   ..+o.        |
++----[SHA256]-----+
+```
+
+## 在中控机器上下载 TiDB-Ansible
+
+以 tidb 用户登录中控机并进入 /home/tidb 目录, 下载 TiDB-Ansible
+
+```java
+$ git clone -b release-2.1 https://github.com/pingcap/tidb-ansible.git
+```
+
+<b>注</b>：请务必按文档操作，将 tidb-ansible 下载到 /home/tidb 目录下，权限为 tidb 用户，不要下载到 /root 下，否则会遇到权限问题。
+
+## 在中控机器上安装 Ansible 及其依赖
+
+以 tidb 用户登录中控机，请务必按以下方式通过 pip 安装 Ansible 及其相关依赖的指定版本，否则会有兼容问题。安装完成后，可通过 ansible --version 查看 Ansible 版本。目前 release-2.0、release-2.1 及 master 版本兼容 Ansible 2.4 及 Ansible 2.5 版本，Ansible 及相关依赖版本记录在 tidb-ansible/requirements.txt 文件中
+
+```java
+$ cd /home/tidb/tidb-ansible
+$ sudo pip install -r ./requirements.txt
+$ ansible --version
+  ansible 2.6.12
+```
+
+## 在中控机上配置部署机器 ssh 互信及 sudo 规则
+
+以 tidb 用户登录中控机，将你的部署目标机器 IP 添加到 hosts.ini 文件 [servers] 区块下。
+
+```java
+[servers]
+192.168.13.151
+192.168.13.152
+192.168.13.153
+192.168.13.154
+192.168.13.155
+192.168.13.156
+192.168.13.157
+192.168.13.158
+
+[all:vars]
+username = tidb
+ntp_server = pool.ntp.org
+```
+
+执行以下命令，按提示输入部署目标机器 root 用户密码。该步骤将在部署目标机器上创建 tidb 用户，并配置 sudo 规则，配置中控机与部署目标机器之间的 ssh 互信。
+
+```java
+$ ansible-playbook -i hosts.ini create_users.yml -u root -k
+```
+
+## 在部署目标机器上安装 NTP 服务
+
+以 tidb 用户登录中控机，执行以下命令：
+
+```java
+$ cd /home/tidb/tidb-ansible
+$ ansible-playbook -i hosts.ini deploy_ntp.yml -u tidb -b
+```
+
+## 分配机器资源，编辑 inventory.ini 文件
+
+以 tidb 用户登录中控机，inventory.ini 文件路径为 /home/tidb/tidb-ansible/inventory.ini。
+
+```java
+## TiDB Cluster Part
+[tidb_servers]
+192.168.13.157
+
+[tikv_servers]
+192.168.13.154
+192.168.13.155
+192.168.13.156
+
+[pd_servers]
+192.168.13.151
+192.168.13.152
+192.168.13.153
+
+[spark_master]
+
+[spark_slaves]
+
+[lightning_server]
+
+[importer_server]
+
+## Monitoring Part
+# prometheus and pushgateway servers
+[monitoring_servers]
+192.168.13.158
+
+[grafana_servers]
+192.168.13.158
+
+# node_exporter and blackbox_exporter servers
+[monitored_servers]
+192.168.13.151
+192.168.13.152
+192.168.13.153
+192.168.13.154
+192.168.13.155
+192.168.13.156
+192.168.13.157
+192.168.13.158
+
+[alertmanager_servers]
+192.168.13.158
+```
+
+## 部署任务
+
+1. 确认 tidb-ansible/inventory.ini 文件中 ansible_user = tidb，本例使用 tidb 用户作为服务运行用户，配置如下：
+
+```java
+## Connection
+# ssh via normal user
+ansible_user = tidb
+```
+
+执行以下命令如果所有 server 返回 tidb 表示 ssh 互信配置成功。
+
+```java
+$ ansible -i inventory.ini all -m shell -a 'whoami'
+```
+
+执行以下命令如果所有 server 返回 root 表示 tidb 用户 sudo 免密码配置成功。
+
+```java
+$ ansible -i inventory.ini all -m shell -a 'whoami' -b
+```
+
+2. 执行 local_prepare.yml playbook，联网下载 TiDB binary 到中控机：
+
+```java
+$ ansible-playbook local_prepare.yml
+```
+
+3. 初始化系统环境，修改内核参数  
+   <b>注:</b> 这里即使错了也没有关系，这里会检查最低配置，所以这里报错也没有关系。
+
+```java
+$ ansible-playbook bootstrap.yml
+```
+
+4. 部署 TiDB 集群软件
+
+```java
+$ ansible-playbook deploy.yml
+```
+
+5. 启动 TiDB 集群
+
+```java
+$ ansible-playbook start.yml
+```
+
+## 测试集群
+
+测试连接 TiDB 集群，推荐在 TiDB 前配置负载均衡来对外统一提供 SQL 接口。
+
+- 使用 MySQL 客户端连接测试，TCP 4000 端口是 TiDB 服务默认端口。
+
+```java
+$ mysql -u root -h 192.168.13.157 -P 4000
+```
+
+- 通过浏览器访问监控平台。
+  地址：http://192.168.13.158:3000 默认帐号密码是：admin/admin
 
 参考：  
 https://www.pingcap.com/docs-cn/op-guide/ansible-deployment/
