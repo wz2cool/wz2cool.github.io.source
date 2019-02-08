@@ -156,8 +156,6 @@ $ select count(0) from stackoverflow.comments where score > 3
 
 ## 连表查询
 
-### 带索引
-
 ```java
 $ select count(0) from math_stackexchange.comments as a join math_stackexchange.users as b on a.UserId = b.Id where a.CreationDate > '2017-01-01' and  b.views > 10
 $ select count(0) from stackoverflow.comments as a join stackoverflow.users as b on a.UserId = b.Id where a.CreationDate > '2017-01-01' and  b.views > 10
