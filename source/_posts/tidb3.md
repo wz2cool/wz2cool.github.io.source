@@ -104,9 +104,9 @@ ENGINE=InnoDB
 | stackoverflow      | users    | 9737247  | 接近千万级别 |
 | stackoverflow      | comments | 60915000 | 5 千万级别   |
 
-## 单表 Count
+## 单表查询
 
-曾经我们常常会慢在 Count 所以统计表数量成为我优先测试的一项。
+### 单表 Count
 
 ```java
 $ SELECT COUNT(0) FROM [表名]
@@ -120,8 +120,6 @@ $ SELECT COUNT(0) FROM [表名]
 | stackoverflow.comments      | 15.359 sec | 4.922 sec |
 
 ![tidb_single_select_count](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count.png)
-
-## 单表查询
 
 ### 带索引
 
@@ -155,3 +153,27 @@ $ select count(0) from stackoverflow.comments where score > 3
 | stackoverflow.comments      | 61.42 sec | 11.313 sec |
 
 ![tidb_single_select_count3](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count3.png)
+
+## 连表查询
+
+### 带索引
+
+```java
+$ select count(0) from math_stackexchange.comments as a join math_stackexchange.users as b on a.UserId = b.Id where a.CreationDate > '2017-01-01' and  b.views > 10
+$ select count(0) from stackoverflow.comments as a join stackoverflow.users as b on a.UserId = b.Id where a.CreationDate > '2017-01-01' and  b.views > 10
+```
+
+|                    | MySQL      | TiDB       |
+| ------------------ | ---------- | ---------- |
+| math_stackexchange | 5.297 sec  | 4.468 sec  |
+| stackoverflow      | 180.55 sec | 27.515 sec |
+
+![tidb_single_select_count4](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count4.png)
+
+# 小结
+
+1. 由于硬件所限，无法发挥 TiDB 比较好的性能。
+2. 在表数据量比较小的时候 MySQL 的速度其实是好于 TiDB 的。
+   - 因为 TiDB 组件之间需要网络传输 （这也是 TiDB 生产环境需要万兆网卡的原因）
+   - 对于小表数据 MySQL 会保存在缓存中
+3. TiDB 在大数据量上基本是是好于 MySQL （官方推荐表数据在 5000w 以上）
