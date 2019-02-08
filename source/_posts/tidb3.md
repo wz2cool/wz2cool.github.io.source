@@ -95,12 +95,12 @@ ENGINE=InnoDB
 ;
 ```
 
-| 数据库             | 表名     | 数量     |
-| ------------------ | -------- | -------- |
-| math_stackexchange | users    | 497023   |
-| math_stackexchange | comments | 4463392  |
-| stackoverflow      | users    | 9737247  |
-| stackoverflow      | comments | 60915000 |
+| 数据库             | 表名     | 数量     | 量级         |
+| ------------------ | -------- | -------- | ------------ |
+| math_stackexchange | users    | 497023   | 十万级别     |
+| math_stackexchange | comments | 4463392  | 百万级别     |
+| stackoverflow      | users    | 9737247  | 接近千万级别 |
+| stackoverflow      | comments | 60915000 | 5 千万级别   |
 
 ## 单表 Count
 
@@ -117,4 +117,4 @@ ENGINE=InnoDB
 | stackoverflow. users        | 3.719 sec  | 0.953 sec |
 | stackoverflow. comments     | 15.359 sec | 4.922 sec |
 
-这里我们看出来
+![tidb_single_select_count](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count.png)
