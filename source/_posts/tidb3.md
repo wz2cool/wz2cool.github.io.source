@@ -88,11 +88,13 @@ CREATE TABLE `users` (
 	`DownVotes` INT(11) NULL DEFAULT NULL,
 	`AccountId` BIGINT(20) NULL DEFAULT NULL,
 	`ProfileImageUrl` VARCHAR(255) NULL,
-	PRIMARY KEY (`Id`)
+	PRIMARY KEY (`Id`),
+	INDEX `CreationDate` (`CreationDate`)
 )
 COLLATE='utf8mb4_bin'
 ENGINE=InnoDB
 ;
+
 ```
 
 | 数据库             | 表名     | 数量     | 量级         |
@@ -107,14 +109,49 @@ ENGINE=InnoDB
 曾经我们常常会慢在 Count 所以统计表数量成为我优先测试的一项。
 
 ```java
-# SELECT COUNT(0) FROM [表名]
+$ SELECT COUNT(0) FROM [表名]
 ```
 
 |                             | MySQL      | TiDB      |
 | --------------------------- | ---------- | --------- |
 | math_stackexchange.users    | 0.234 sec  | 0.359 sec |
 | math_stackexchange.comments | 1.031 sec  | 0.625 sec |
-| stackoverflow. users        | 3.719 sec  | 0.953 sec |
-| stackoverflow. comments     | 15.359 sec | 4.922 sec |
+| stackoverflow.users         | 3.719 sec  | 0.953 sec |
+| stackoverflow.comments      | 15.359 sec | 4.922 sec |
 
 ![tidb_single_select_count](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count.png)
+
+## 单表查询
+
+### 带索引
+
+```java
+$ select count(0) from [表名] where CreationDate > '2017-01-01'
+```
+
+|                             | MySQL     | TiDB      |
+| --------------------------- | --------- | --------- |
+| math_stackexchange.users    | 0.063 sec | 0.219 sec |
+| math_stackexchange.comments | 0.422 sec | 0.813 sec |
+| stackoverflow.users         | 0.922 sec | 1.312 sec |
+| stackoverflow.comments      | 2.891 sec | 1.437 sec |
+
+![tidb_single_select_count2](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count2.png)
+
+### 无索引
+
+```java
+$ select count(0) from math_stackexchange.users where views > 10
+$ select count(0) from math_stackexchange.comments where score > 3
+$ select count(0) from stackoverflow.users where views > 10
+$ select count(0) from stackoverflow.comments where score > 3
+```
+
+|                             | MySQL     | TiDB       |
+| --------------------------- | --------- | ---------- |
+| math_stackexchange.users    | 0.203 sec | 0.484 sec  |
+| math_stackexchange.comments | 2.219 sec | 1.297 sec  |
+| stackoverflow.users         | 4.312 sec | 2.297 sec  |
+| stackoverflow.comments      | 61.42 sec | 11.313 sec |
+
+![tidb_single_select_count3](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count3.png)
