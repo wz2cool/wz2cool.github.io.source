@@ -29,7 +29,7 @@ tags:
 ## 下载测试数据
 
 所有数据均来自于 [Stack Exchange Data Dump](https://archive.org/details/stackexchange)。  
-当然下载的数据都是 xml 格式，使用不方便，我已经转化成 MySQL 能使用的 sql 文件了。
+当然下载的数据都是 xml 格式，方便大家使用，已经转化成 MySQL 能使用的 sql 文件了。
 
 下载：
 
