@@ -168,45 +168,6 @@ $ select count(0) from stackoverflow.comments as a join stackoverflow.users as b
 
 ![tidb_single_select_count4](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/tidb_single_select_count4.png)
 
-# 并发
-
-本次测试并发采用：[jmeter 分布式压力测试](https://wz2cool.github.io/2019/02/09/jmeter2/)  
-测试例子来自于： [tidb-stress-test](https://github.com/wz2cool/tidb-stress-test)
-
-## 配置
-
-| 机器    | IP             |
-| ------- | -------------- |
-| master  | 192.168.10.53  |
-| slave_1 | 192.168.8.14   |
-| slave_2 | 192.168.8.123  |
-| slave_3 | 192.168.8.132  |
-| slave_4 | 1192.168.8.135 |
-| slave_5 | 192.168.8.136  |
-
-## 无筛选分页取数据
-
-为了保证无缓存，在 jmeter 测试的时候，我弄了一个随机页码
-
-```java
-$ SELECT Score AS score, Id AS id, Text AS text, CreationDate AS creationDate FROM stackoverflow.comments ORDER BY CreationDate DESC LIMIT [随机页码],20
-```
-
-|     | TiDB | MySQL |
-| --- | ---- | ----- |
-| 10  | 151  | 15    |
-| 20  | 370  | 8     |
-| 30  | 618  | 9     |
-| 40  | 772  | 7     |
-| 50  | 1262 | 8     |
-| 60  | 1519 | 6     |
-| 70  | 1441 | 6     |
-| 80  | 2477 | 11    |
-| 90  | 2010 | 11    |
-| 100 | 2058 | 6     |
-
-![single_table_select](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/single_table_select.png)
-
 # 小结
 
 1. 由于硬件所限，无法发挥 TiDB 比较好的性能。
