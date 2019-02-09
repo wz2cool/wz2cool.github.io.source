@@ -23,12 +23,13 @@ $ java -version
 
 ## 安装 jmeter
 
-- 从官网下载最新版本：http://jmeter.apache.org/download_jmeter.cgi
+- 从官网下载 3.3 版本： https://archive.apache.org/dist/jmeter/binaries/
+  <b>注：</b>这里非常不建议下载最新 5.0 版本，因为会在分布式那边遇到 SSL 问题。
 
 ```java
-$ wget http://mirrors.hust.edu.cn/apache//jmeter/binaries/apache-jmeter-5.0.tgz
-$ tar -xvf apache-jmeter-5.0.tgz
-$ mv apache-jmeter-5.0.tgz jmeter
+$ wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-3.3.tgz
+$ tar -xvf apache-jmeter-3.3.tgz
+$ mv apache-jmeter-3.3.tgz jmeter
 $ mv jmeter /usr/local
 ```
 
