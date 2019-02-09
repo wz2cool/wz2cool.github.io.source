@@ -69,7 +69,7 @@ remote_hosts=192.168.8.14,192.168.8.123
 ## 运行
 
 - 单台运行  
-  选择 Remote start 菜单
+  选择 Remote start 菜单  
   ![jmeter_remote_start](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/jmeter_remote_start.png)
 
 - 全部一起运行
