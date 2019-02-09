@@ -7,7 +7,8 @@ tags:
 
 # 前言
 
-jmeter 是一个 apache 组织的免费测试工具，我们可以比较简单的做一些测试, 因为自己要做 TiDB 的接口性能测试，所以需要把 jmeter 安装到 Centos7 上。
+jmeter 是一个 apache 组织的免费测试工具，我们可以比较简单的做一些测试, 因为自己要做 TiDB 的接口性能测试，所以需要把 jmeter 安装到 Centos7 上。  
+[jmeter 官网](http://jmeter.apache.org/index.html)
 
 # 安装
 
