@@ -17,7 +17,7 @@ tags:
 
 ## 穷
 
-我们可以看到，TiDB 对性能要求特别高，简单看一下配置。参考：[软硬件要求]（https://www.pingcap.com/docs-cn/op-guide/recommendation/）
+我们可以看到，TiDB 对性能要求特别高，简单看一下配置。参考：[软硬件要求](https://www.pingcap.com/docs-cn/op-guide/recommendation/)
 
 开发测试环境:
 
