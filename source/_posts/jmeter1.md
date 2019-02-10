@@ -1,5 +1,5 @@
 ---
-title: Centos7 安装jmeter
+title: jmeter学习（一）：Centos7 安装jmeter
 date: 2019-02-09 11:27:21
 tags:
   - jmeter

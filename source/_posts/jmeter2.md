@@ -1,5 +1,5 @@
 ---
-title: jmeter 分布式压力测试
+title: jmeter学习（二）：jmeter 分布式压力测试
 date: 2019-02-09 14:26:49
 tags:
   - jmeter
@@ -9,9 +9,9 @@ tags:
 
 当单机测试有局限的时候，我们需要用多台机器来做测试。 [jmeter 分布式](http://jmeter.apache.org/usermanual/jmeter_distributed_testing_step_by_step.html)  
 当然我们需要用到之前已经安装好的系统 [Centos7 安装 jmeter](https://wz2cool.github.io/2019/02/09/jmeter1/),
-这里再次提醒大家使用 jmeter 版本是 3.3，重要的事情说三遍。
+这里再次提醒大家使用 jmeter 版本是 `3.3`，重要的事情说三遍。
 
-# 准备
+# 简介
 
 ## 分布测试基本要求
 
@@ -19,6 +19,17 @@ tags:
 - 所有机器必须在同一子网段上。比如 一台机器用 192.x.x.x 那么另外的机器必须也是 192.x.x.x。
 - 所有机器必须能够互相访问。
 - 所用的 JMeter 和 Java 的版本需要是一样的。
+
+## 结构图
+
+- Master  
+  中控机，这里我们运行 GUI 界面上面，用来控制/发布我们的测试。
+- Slave  
+  执行者，他是由 jmeter-server 运行起来的，是接受中控机（master） 的测试请求，然后去访问目标然后返回测试结果给中控机。
+- Target  
+  目标站点，是我们需要压力测试的对象。
+
+![jmeter_distribution](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/jmeter_distribution.png)
 
 ## 机器配置
 
