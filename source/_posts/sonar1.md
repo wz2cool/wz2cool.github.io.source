@@ -3,6 +3,7 @@ title: SonarQube入门（一）：Docker版本安装
 date: 2019-02-16 18:08:44
 tags:
   - sonarqube
+  - DevOps
 ---
 
 # 前言
@@ -108,8 +109,11 @@ $ cd extensions/plugins
 $ wget https://raw.githubusercontent.com/wz2cool/java-resource/master/jar/sonar-branch-community/2.0/sonar-branch-plugin-2.0.0.jar
 ```
 
-重启 sonarqube， 大功告成  
+重启 sonarqube   
 ![sonar_restart](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/sonar_restart.png)
+
+大功告成，还有就是不要升级插件！   
+![sonar_branch_complete](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/sonar_branch_complete.png)
 
 ## 简便安装带 branch 插件 sonarqube
 
