@@ -6,6 +6,8 @@ tags:
   - Mybatis Dynamic Query
 ---
 
+项目地址： [mybatis-dynamic-query](https://github.com/wz2cool/mybatis-dynamic-query)
+
 # 前言
 
 在 2.0 完成对 tk.mapper 集成，[为何 mybatis-dynamic-query 选择 tk.mapper 集成](https://wz2cool.github.io/2019/10/03/why-choose-tk/), 再 3.0 进一步对查询进行优化，当然这里可能会对比 mybatis-plus, 我觉得有对比大家才能选择自己合适的。
@@ -189,4 +191,4 @@ public void testGetProductListByPlus() {
 
 # 小结
 
-主要给大家看了一下 3.0 对查询的改动，主要也是给大家多一个选择， 稍微对比了一下 mybatis-plus, 自我感觉在查询写法上面有优势，但是 mybatis-plus 是功能非常多，大而全的一整套解决方案，所以理性看待，选择合适自己的。
+主要给大家看了一下 3.0 对查询的改动，主要也是给大家多一个选择， 稍微对比了一下 mybatis-plus, 自我感觉在查询写法上面有优势，但是 mybatis-plus 是功能非常多，大而全的一整套解决方案，文档非常完善，这也是动态查询不具备的，所以大家选择自己合适的。
