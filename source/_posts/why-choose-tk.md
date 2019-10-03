@@ -3,7 +3,7 @@ title: 为何mybatis-dynamic-query 选择tk.mapper集成
 date: 2019-10-03 08:14:22
 tags:
   - java
-  - mybatis-dynamic-query
+  - Mybatis Dynamic Query
 ---
 
 # 前言
