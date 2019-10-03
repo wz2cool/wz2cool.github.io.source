@@ -81,9 +81,9 @@ public void testGetProductListByQuery2() {
     // 根据参数添加筛选条件，这里就是我们看看开始价，结束价有没有，如果有才会放到一个组里面，
     DynamicQuery<ProductsDO> query = DynamicQuery.createQuery(ProductsDO.class)
             .select(ProductsDO::getProductName, ProductsDO::getListPrice, ProductsDO::getCategory)
-            .and(group -> group
-                    .and(ProductsDO::getListPrice, greaterThan(startPrice), Objects.nonNull(startPrice))
-                    .and(ProductsDO::getListPrice, lessThan(endPrice), Objects.nonNull(endPrice)))
+            .and(Objects.nonNull(startPrice) || Objects.nonNull(endPrice), group -> group
+                    .and(Objects.nonNull(startPrice), ProductsDO::getListPrice, greaterThan(startPrice))
+                    .and(Objects.nonNull(endPrice), ProductsDO::getListPrice, lessThan(endPrice)))
             .and(ProductsDO::getDescription, notEqual(null))
             .or(ProductsDO::getId, isEqual(1))
             .orderBy(ProductsDO::getId, desc())
