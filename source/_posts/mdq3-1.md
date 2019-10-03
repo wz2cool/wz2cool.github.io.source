@@ -69,28 +69,124 @@ public void testGetProductListByQuery() {
 
 ### enable 字段
 
-大家看到上面例子没有 if 判断条件会断开一个查询，这个在阅读的时候非常不方便，有了 enable 可以设置这个筛选是否生效，这样我们写代码的可读性高了
+大家看到上面例子, 有 if 判断条件会断开一个查询，这个在阅读的时候非常不方便，有了 enable 可以设置这个筛选是否生效，这样我们写代码的可读性高了
+
+```java
+@Test
+public void testGetProductListByQuery2() {
+    BigDecimal startPrice = BigDecimal.valueOf(1.1);
+    BigDecimal endPrice = BigDecimal.valueOf(10.1);
+    // 根据参数添加筛选条件，这里就是我们看看开始价，结束价有没有，如果有才会放到一个组里面，
+    DynamicQuery<ProductsDO> query = DynamicQuery.createQuery(ProductsDO.class)
+            .select(ProductsDO::getProductName, ProductsDO::getListPrice, ProductsDO::getCategory)
+            .and(group -> group
+                    .and(ProductsDO::getListPrice, greaterThan(startPrice), Objects.nonNull(startPrice))
+                    .and(ProductsDO::getListPrice, lessThan(endPrice), Objects.nonNull(endPrice)))
+            .and(ProductsDO::getDescription, notEqual(null))
+            .or(ProductsDO::getId, isEqual(1))
+            .orderBy(ProductsDO::getId, desc())
+            .orderBy(ProductsDO::getListPrice, asc());
+    List<ProductsDO> result = productMapper.selectByDynamicQuery(query);
+    Assert.assertFalse(result.isEmpty());
+}
+```
+
+# 对比
+
+开始我是不知道 mybatis-plus [博客园动态查询第一帖](https://www.cnblogs.com/wz2cool/p/7268428.html) 的不然的话，可能我就直接用了哈哈~，既然自己做了一个也和标杆对比一下吧，但还是期望大家选择自己合适的吧，这里我只对比 mybatis-plus 查询功能。
+
+## 举例
+
+### 复杂条件查询
+
+基本和动态查询在写法上基本表现一致，不过新版的动态插叙加上了 enable 字段以后读起来会好一些
+
+```java
+@Test
+public void testGetProductListByPlus() {
+    BigDecimal startPrice = BigDecimal.valueOf(1.1);
+    BigDecimal endPrice = BigDecimal.valueOf(10.1);
+    LambdaQueryWrapper<ProductsDO> queryWrapper = new QueryWrapper<ProductsDO>().lambda()
+            .select(ProductsDO::getListPrice, ProductsDO::getProductName, ProductsDO::getCategory);
+    if (Objects.nonNull(startPrice) && Objects.nonNull(endPrice)) {
+        // 没有找到如何将连个price 筛选放到一个组里面
+        queryWrapper.and(obj -> obj.gt(ProductsDO::getListPrice, startPrice)
+                .lt(ProductsDO::getListPrice, endPrice));
+    } else if (Objects.nonNull(startPrice)) {
+        queryWrapper.gt(ProductsDO::getListPrice, startPrice);
+    } else if (Objects.nonNull(endPrice)) {
+        queryWrapper.lt(ProductsDO::getListPrice, startPrice);
+    }
+    queryWrapper.ne(ProductsDO::getDescription, null)
+            .or(obj -> obj.eq(ProductsDO::getId, 1))
+            .orderByDesc(ProductsDO::getId)
+            .orderByAsc(ProductsDO::getListPrice);
+    List<ProductsDO> result = productPlusMapper.selectList(queryWrapper);
+    Assert.assertFalse(result.isEmpty());
+}
+```
+
+### 灵活性
+
+mybatis-plus 是非常灵活的， api 特别多， 比如 queryWrapper 可以直接接上操作符比如 eq，gt, lt 也可以接 and， or， 但是动态查询对于筛选只能接 and / or 操作符必须在里面， 我个人喜欢统一性，这其实就是仁者见仁智者见智了。
+
+### 安全性
+
+#### 类型检查
+
+可以说这个就是动态查询的优势了，设计之初就是怎么样让用户写出不会错的代码，所以所有的筛选值都是强类型，比如说字段 Price 是一个 BigDecimal, 如果写 Integer 就会报错，但是 mybatis-plus 就不会报错。
 
 ```java
 @Test
 public void testGetProductListByQuery2() {
   BigDecimal startPrice = BigDecimal.valueOf(1.1);
   BigDecimal endPrice = BigDecimal.valueOf(10.1);
-  // 根据参数添加筛选条件，这里就是我们看看开始价，结束价有没有，如果有才会放到一个组里面，
-  // @formatter:off
+  Integer integerStartPrice = 1;
   DynamicQuery<ProductsDO> query = DynamicQuery.createQuery(ProductsDO.class)
     .select(ProductsDO::getProductName, ProductsDO::getListPrice, ProductsDO::getCategory)
-    // 如果开始价格和结束价格都没有这个价格筛选组都不会产生
-    .andGroupBegin(Objects.nonNull(startPrice) || Objects.nonNull(endPrice))
-        .and(ProductsDO::getListPrice, greaterThan(startPrice), Objects.nonNull(startPrice))
-        .and(ProductsDO::getListPrice, lessThan(endPrice), Objects.nonNull(endPrice))
-    .groupEnd()
+    .and(group -> group
+            // 这段代码 会包错，因为integerStartPrice 不是BigDecimal 类型的
+            .and(ProductsDO::getListPrice, greaterThan(integerStartPrice), Objects.nonNull(startPrice))
+            .and(ProductsDO::getListPrice, lessThan(endPrice), Objects.nonNull(endPrice)))
     .and(ProductsDO::getDescription, notEqual(null))
     .or(ProductsDO::getId, isEqual(1))
     .orderBy(ProductsDO::getId, desc())
     .orderBy(ProductsDO::getListPrice, asc());
   List<ProductsDO> result = productMapper.selectByDynamicQuery(query);
   Assert.assertFalse(result.isEmpty());
-  // @formatter:on
 }
 ```
+
+### 链式调用
+
+这个动态查询和 mybatis-plus 都是支持的，不一样的是，动态查询不会随意接后面的方法，是做过验证的，但是 mybatis-plus 比较灵活，把这个安全性检查交给用户了。
+比如
+
+```java
+@Test
+public void testGetProductListByPlus() {
+    BigDecimal startPrice = BigDecimal.valueOf(1.1);
+    BigDecimal endPrice = BigDecimal.valueOf(10.1);
+    LambdaQueryWrapper<ProductsDO> queryWrapper = new QueryWrapper<ProductsDO>().lambda()
+            .select(ProductsDO::getListPrice, ProductsDO::getProductName, ProductsDO::getCategory);
+    if (Objects.nonNull(startPrice) && Objects.nonNull(endPrice)) {
+        // 这里我随意在筛选后面添加了一个排序, 编译的时候没有错，执行的时候会报错
+        queryWrapper.and(obj -> obj.gt(ProductsDO::getListPrice, startPrice)
+                .lt(ProductsDO::getListPrice, endPrice).orderByAsc(ProductsDO::getListPrice));
+    } else if (Objects.nonNull(startPrice)) {
+        queryWrapper.gt(ProductsDO::getListPrice, startPrice);
+    } else if (Objects.nonNull(endPrice)) {
+        queryWrapper.lt(ProductsDO::getListPrice, startPrice);
+    }
+    queryWrapper.ne(ProductsDO::getDescription, null)
+            .or(obj -> obj.eq(ProductsDO::getId, 1))
+            .orderByDesc(ProductsDO::getId)
+            .orderByAsc(ProductsDO::getListPrice);
+    List<ProductsDO> result = productPlusMapper.selectList(queryWrapper);
+    Assert.assertFalse(result.isEmpty());
+}
+```
+
+# 小结
+
+主要给大家看了一下 3.0 对查询的改动，主要也是给大家多一个选择， 稍微对比了一下 mybatis-plus, 自我感觉在查询写法上面有优势，但是 mybatis-plus 是功能非常多，大而全的一整套解决方案，所以理性看待，选择合适自己的。
