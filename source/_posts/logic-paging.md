@@ -46,3 +46,10 @@ totalPage = Math.ceiling(totalCount / pageSize)
 
 逻辑分页是一种权衡，就是说我们需要抛弃传统分页算总数（用户不知道到底有多少页），转而换成告诉用户，有没有上一页，有没有下一页。有一点点像 leetcode 里面有一种解决方法叫做窗口滑动。
 
+那么具体我们怎么做呢？
+
+- 首先我们需要多查一条记录，就是说我们判断有没有下一页，就是我们只需要多查一条数据就可以了，比如我们分页 pageSize 是 5， 那么实际上只需要 6 条数据就知道有没有下一页了  
+  比如下图，就知道是有下一页的  
+  [![logic1.md.png](https://wx2.sbimg.cn/2020/05/02/logic1.md.png)](https://sbimg.cn/image/mo7cw)  
+  再比如我们再翻页，因为下一页不足 6 条数据我们就知道是没有下一页了   
+  [![logic2.md.png](https://wx1.sbimg.cn/2020/05/02/logic2.md.png)](https://sbimg.cn/image/moHYo)
