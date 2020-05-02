@@ -79,23 +79,99 @@ SELECT * FROM `student` WHERE ID > 5 Limit 6
 
 ```java
 @Test
-public void testGetDataAscDown() {
+public void testLogicPaging1() throws JsonProcessingException {
     // 用 student 表中的id 作为分页id，升序并且向下翻页
-    LogicPagingQuery<Student> logicPagingQuery =
-            LogicPagingQuery.createQuery(Student.class, Student::getId, SortDirection.ASC, UpDown.DOWN);
+    LogicPagingQuery<StudentDO> logicPagingQuery =
+            LogicPagingQuery.createQuery(StudentDO.class, StudentDO::getId, SortDirection.ASC, UpDown.DOWN);
     logicPagingQuery.setPageSize(5);
-    LogicPagingResult<Student> result = productDao.selectByLogicPaging(logicPagingQuery);
-}
-
-@Test
-public void testGetDataAscDown2() {
-     // 用 student 表中的id 作为分页id，升序并且向下翻页
-    LogicPagingQuery<Student> logicPagingQuery =
-            LogicPagingQuery.createQuery(Student.class, Student::getId, SortDirection.ASC, UpDown.DOWN);
-    logicPagingQuery.setPageSize(5);
-    // 我们第二次翻页要填上上次pageId位置信息
-    logicPagingQuery.setLastStartPageId(1L);
-    logicPagingQuery.setLastEndPageId(5L);
-    LogicPagingResult<Student> result = productDao.selectByLogicPaging(logicPagingQuery);
+    LogicPagingResult<StudentDO> result = studentMapper.selectByLogicPaging(logicPagingQuery);
+    ObjectMapper objectMapper = new ObjectMapper();
+    String jsonStr = objectMapper.writeValueAsString(result);
+    System.out.println(jsonStr);
 }
 ```
+
+我们看一下输出结果
+
+```json
+{
+  "hasPreviousPage": true,
+  "hasNextPage": true,
+  "pageSize": 5,
+  "startPageId": 1,
+  "endPageId": 5,
+  "list": [
+    {
+      "id": 1,
+      "name": "Ernest Emerson"
+    },
+    {
+      "id": 2,
+      "name": "Rosemary Ernest"
+    },
+    {
+      "id": 3,
+      "name": "Prima Ramsden"
+    },
+    {
+      "id": 4,
+      "name": "Haley Noyes"
+    },
+    {
+      "id": 5,
+      "name": "Mildred Juliet"
+    }
+  ]
+}
+```
+
+```java
+@Test
+public void testLogicPaging2() throws JsonProcessingException {
+    // 用 student 表中的id 作为分页id，升序并且向下翻页
+    LogicPagingQuery<StudentDO> logicPagingQuery =
+            LogicPagingQuery.createQuery(StudentDO.class, StudentDO::getId, SortDirection.ASC, UpDown.DOWN);
+    logicPagingQuery.setPageSize(5);
+    // 我们第二次翻页要填上上次 pageId 位置信息
+    logicPagingQuery.setLastStartPageId(1L);
+    logicPagingQuery.setLastEndPageId(5L);
+    LogicPagingResult<StudentDO> result = studentMapper.selectByLogicPaging(logicPagingQuery);
+    ObjectMapper objectMapper = new ObjectMapper();
+    String jsonStr = objectMapper.writeValueAsString(result);
+    System.out.println(jsonStr);
+}
+```
+
+这里我们看到了， 是没有下一页
+
+```json
+{
+  "hasPreviousPage": true,
+  "hasNextPage": false,
+  "pageSize": 5,
+  "startPageId": 6,
+  "endPageId": 9,
+  "list": [
+    {
+      "id": 6,
+      "name": "Elvira Daisy"
+    },
+    {
+      "id": 7,
+      "name": "Monica Robeson"
+    },
+    {
+      "id": 8,
+      "name": "Katherine Eliot"
+    },
+    {
+      "id": 9,
+      "name": "Hamiltion Hamlet"
+    }
+  ]
+}
+```
+
+# 小结
+
+逻辑分页是针对大数据分页的一味良药，从两个方面优化查询，性能可能是 3~4 倍的提升，当然介绍逻辑分页的时候简化了，并没有提到如果向上翻页应该如何处理，这里大家如果有兴趣也可以自我研究一下。
