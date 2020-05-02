@@ -48,8 +48,54 @@ totalPage = Math.ceiling(totalCount / pageSize)
 
 那么具体我们怎么做呢？
 
-- 首先我们需要多查一条记录，就是说我们判断有没有下一页，就是我们只需要多查一条数据就可以了，比如我们分页 pageSize 是 5， 那么实际上只需要 6 条数据就知道有没有下一页了  
-  比如下图，就知道是有下一页的  
-  [![logic1.md.png](https://wx2.sbimg.cn/2020/05/02/logic1.md.png)](https://sbimg.cn/image/mo7cw)  
-  再比如我们再翻页，因为下一页不足 6 条数据我们就知道是没有下一页了   
-  [![logic2.md.png](https://wx1.sbimg.cn/2020/05/02/logic2.md.png)](https://sbimg.cn/image/moHYo)
+- 首先我们需要确认一个分页 id，因为没有这个分页 id 我们无法知道下一页从哪里开始。
+- 然后我们需要多查一条记录，就是说我们判断有没有下一页，就是我们只需要多查一条数据就可以了，比如我们分页 pageSize 是 5， 那么实际上只需要 6 条数据就知道有没有下一页了
+
+有了上面两个理论基础，我们假设一个场景：我们有 9 名学生，每个学生有自己的 id 和名字， 我们分页查询，每页 5 条数据  
+首先我们多查一条数据，那么就是说我们要查 6 条， 然后 6 > 5 我们就知道有下一页了  
+这里我们要记录一下这个窗口的分页 id (startPageId: 1, endPageId: 5), pageId 是为了记录位置
+
+```sql
+SELECT * FROM `student` LIMIT 6
+```
+
+[![logic1.md.png](https://wx1.sbimg.cn/2020/05/02/logic1.md.png)](https://sbimg.cn/image/moNYY)
+
+再比如我们再翻页, 其实我们后面只有 4 名学生了， 4 < 5 我们就知道没有下一页了  
+这里我们也要记录一下这个结果集的分页 id (startPageId: 6, endPageId: 9), pageId 是为了记录位置
+
+```sql
+-- 这里的5 是上一次endPageId
+SELECT * FROM `student` WHERE ID > 5 Limit 6
+```
+
+[![logic2.md.png](https://wx1.sbimg.cn/2020/05/02/logic2.md.png)](https://sbimg.cn/image/moHYo)
+
+好了大家已经能看到优势了对吧，一般来说 id 是有索引的，这样避免了 offset 过大导致语句慢，还有就是其实这里用多查一条来代替查询 count
+
+## 在框架中应用
+
+这里面我们需要使用一个新的 LogicPagingQuery, 专门来做逻辑分页，注意逻辑分页是不允许非 PageId 字段进行排序的，因为我们需要根据这个逻辑的分页 ID 来进行记录位置
+
+```java
+@Test
+public void testGetDataAscDown() {
+    // 用 student 表中的id 作为分页id，升序并且向下翻页
+    LogicPagingQuery<Student> logicPagingQuery =
+            LogicPagingQuery.createQuery(Student.class, Student::getId, SortDirection.ASC, UpDown.DOWN);
+    logicPagingQuery.setPageSize(5);
+    LogicPagingResult<Student> result = productDao.selectByLogicPaging(logicPagingQuery);
+}
+
+@Test
+public void testGetDataAscDown2() {
+     // 用 student 表中的id 作为分页id，升序并且向下翻页
+    LogicPagingQuery<Student> logicPagingQuery =
+            LogicPagingQuery.createQuery(Student.class, Student::getId, SortDirection.ASC, UpDown.DOWN);
+    logicPagingQuery.setPageSize(5);
+    // 我们第二次翻页要填上上次pageId位置信息
+    logicPagingQuery.setLastStartPageId(1L);
+    logicPagingQuery.setLastEndPageId(5L);
+    LogicPagingResult<Student> result = productDao.selectByLogicPaging(logicPagingQuery);
+}
+```
