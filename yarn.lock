@@ -820,7 +820,7 @@ hexo-cli@^1.0.2:
     object-assign "^4.1.0"
     tildify "^1.2.0"
 
-hexo-deployer-git@^0.3.0:
+hexo-deployer-git@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/hexo-deployer-git/-/hexo-deployer-git-0.3.1.tgz#26b085ecc50e2cc99ecd33d56c254c5544c02d21"
   dependencies:
@@ -974,8 +974,8 @@ hexo@^3.2.0:
     warehouse "^2.2.0"
 
 highlight.js@^9.4.0:
-  version "9.12.0"
-  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.12.0.tgz#e6d9dbe57cbefe60751f02af336195870c90c01e"
+  version "9.18.5"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.18.5.tgz#d18a359867f378c138d6819edfc2a8acd5f29825"
 
 hoek@2.x.x:
   version "2.16.3"
