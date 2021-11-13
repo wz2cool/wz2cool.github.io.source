@@ -17,28 +17,28 @@ elasticsearch Dynamic Query 是对 spring data elasticsearch 的一个封装， 
 
 ## 智能提示
 
-![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/es-autocomplete.png)
+![](assets/es-autocomplete.png)
 
 ## 强类型报错
 
 对于基础类型，能做到强类型报错  
-![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/strong-type.png)
+![](assets/strong-type.png)
 
 ## 评分排序
 
-![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/order-score.png)
+![](assets/order-score.png)
 
 ## 高亮映射
 
-![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/highlight.png)
+![](assets/highlight.png)
 
 ## 内嵌属性查询
 
-![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/nested-object.png)
+![](assets/nested-object.png)
 
 ## 智能提示操作
 
-![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/es-ops.png)
+![](assets/es-ops.png)
 
 # 结束
 
