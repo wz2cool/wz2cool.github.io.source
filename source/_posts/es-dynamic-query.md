@@ -6,8 +6,8 @@ tags:
   - java
 ---
 
-项目地址：https://github.com/wz2cool/elasticsearch-dynamic-query    
-demo 地址： https://github.com/wz2cool/elasticsearch-dynamic-query-demo    
+项目地址：https://github.com/wz2cool/elasticsearch-dynamic-query  
+demo 地址： https://github.com/wz2cool/elasticsearch-dynamic-query-demo
 
 # 简介
 
@@ -25,13 +25,21 @@ elasticsearch Dynamic Query 是对 spring data elasticsearch 的一个封装， 
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/strong-type.png)
 
 ## 评分排序
+
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/order-score.png)
 
 ## 高亮映射
+
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/highlight.png)
 
 ## 内嵌属性查询
+
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/nested-object.png)
 
 ## 智能提示操作
+
 ![](https://raw.githubusercontent.com/wz2cool/markdownPhotos/master/res/es-ops.png)
+
+# 结束
+
+后续会详细出教程如何更加便利的使用这套框架，大家可以先对着 demo 试用起来
