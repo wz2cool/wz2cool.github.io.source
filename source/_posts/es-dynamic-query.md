@@ -17,28 +17,28 @@ elasticsearch Dynamic Query 是对 spring data elasticsearch 的一个封装， 
 
 ## 智能提示
 
-![](assets/es-autocomplete.png)
+![](es-dynamic-query/es-autocomplete.png)
 
 ## 强类型报错
 
 对于基础类型，能做到强类型报错  
-![](assets/strong-type.png)
+![](es-dynamic-query/strong-type.png)
 
 ## 评分排序
 
-![](assets/order-score.png)
+![](es-dynamic-query/order-score.png)
 
 ## 高亮映射
 
-![](assets/highlight.png)
+![](es-dynamic-query/highlight.png)
 
 ## 内嵌属性查询
 
-![](assets/nested-object.png)
+![](es-dynamic-query/nested-object.png)
 
 ## 智能提示操作
 
-![](assets/es-ops.png)
+![](es-dynamic-query/es-ops.png)
 
 # 结束
 
