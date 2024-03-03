@@ -64,6 +64,7 @@ tags:
 | isNull            | 判断当前对象是否为 Null                                   |
 | isUndefinend      | 判断当前对象是否为 Undefinend                             |
 | isNullOrUndefined | 判断当前对象是否为 Null 或者 Undefinend (推荐经常使用)    |
+| hasValue          | 判断当前对象是否有值, 是isNullOrUndefined 取反           |
 | isArray           | 判断当前对象是否为数组类型                                |
 | isDate            | 判断当前对象是否为时间类型                                |
 | isString          | 判断当前对象是否为字符串类型                              |
