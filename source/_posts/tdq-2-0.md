@@ -11,7 +11,7 @@ tags:
 # 前言
 
 这次大版本升级可以让前端保持和 java 版本写法可以保持一致，前端也可以很方便用链式调用完成 DynamicQuery 构建, 这次改动有点大，但是这边尽量做到对以前语法兼容和 100% 代码覆盖率。
-![alt text](image-4.png)
+![alt text](tdq-2-0/image-4.png)
 
 # 更新内容
 
@@ -84,17 +84,17 @@ it("group (>1 and < 3) or (= 5)", () => {
 ## 智能提示
 
 无需在去记繁琐的属性
-![alt text](image.png)
+![alt text](tdq-2-0/image.png)
 
 用下划线规避 例如\_in 操作符为保留字段
-![alt text](image-1.png)
+![alt text](tdq-2-0/image-1.png)
 
 ## 强类型校验
 
 p1 为 number 类型，当筛选值为字符串报错
-![alt text](image-2.png)
+![alt text](tdq-2-0/image-2.png)
 当筛选值为 1 不报错
-![alt text](image-3.png)
+![alt text](tdq-2-0/image-3.png)
 
 # 最后
 
