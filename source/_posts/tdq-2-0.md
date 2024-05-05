@@ -1,5 +1,5 @@
 ---
-title: tdq-2.0
+title: ts-dynamic-query 2.0 更新
 date: 2024-05-05 10:31:08
 tags:
   - typescript
