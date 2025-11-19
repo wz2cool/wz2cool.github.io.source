@@ -5,6 +5,14 @@
   "hexo": {
     "version": "4.2.1"
   },
+  "scripts": {
+    "server": "hexo server",
+    "generate": "hexo generate",
+    "deploy": "hexo deploy",
+    "clean": "hexo clean",
+    "build": "hexo clean && hexo generate",
+    "publish": "hexo clean && hexo generate && hexo deploy"
+  },
   "dependencies": {
     "hexo": "~4.2.1",
     "hexo-asset-image": "git+https://github.com/CodeFalling/hexo-asset-image.git",
